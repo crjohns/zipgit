@@ -15,7 +15,11 @@ it with 'ln -s zipgit.sh zipgit'.
 Usage
 -----
 
-There are currently two commands "open" and "close".
+There are currently three commands: "init", "open", and "close".
+
+'zipgit init FILE' will initialize a bare git repository and store it
+in the root directory of a zip file at the given path. NOTE: This 
+will delete any zip file currently there.
 
 'zipgit open FILE' will extract 'FILE' to './.ziprepo' and make note of it
 in './.zipgitopened'
@@ -55,6 +59,5 @@ TODO
 This is clearly a work in progress (I just hacked together this script in
 30 minutes).
 
-New features that I would like are the ability to init a bare git repo in
-a zip file, and tighter integration with git. The whole "open zip file, 
-do work, close zip file" pattern may not be the best choice.
+Overall, the "open/close" paradigm may need to be rethinked for this 
+utility.
