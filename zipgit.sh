@@ -6,10 +6,45 @@ function usage
     echo Commands:
     echo "open <zipfile>   - Open zip file as a remote"
     echo "close            - Close the opened zip file, and save data"
-    echo "save             - Save the opened zip file without closing"
+    echo "init <zipfile>   - Initialize a new bare repository"
+   # echo "save             - Save the opened zip file without closing"
 }
 
-if test "$1" = "open"; then
+function save
+{
+    if test ! -e "$1"; then
+        touch "$1"
+        FILENAME=`readlink -f "$1"`
+        rm -f "$1"
+    else
+        FILENAME="$1"
+    fi
+
+    cd .ziprepo
+    rm -f "$FILENAME"
+    zip -q -r "$FILENAME" .
+    cd ..
+
+    rm -rf .ziprepo
+    rm -f .zipgitopened
+}
+
+if test "$1" = "init"; then
+    FILE=$2
+    if test -z "$FILE"; then
+        usage
+        exit
+    fi
+
+    mkdir .ziprepo
+    cd .ziprepo
+    git init --bare > /dev/null 2>/dev/null
+    cd ..
+    save "$FILE"
+
+    echo "Initialized new git repository in ZIP file $FILE"
+
+elif test "$1" = "open"; then
     FILE=$2
     if test -z "$FILE"; then
         usage
@@ -45,14 +80,8 @@ elif test "$1" = "close"; then
     
     OPENFILE=`readlink -f "$OPENFILE"`
 
-    cd .ziprepo
-    rm $OPENFILE
-    zip -q -r "$OPENFILE" .
-    cd ..
-
-    rm -rf .ziprepo
-    rm -f .zipgitopened
-
+    save "$OPENFILE"
+    
     echo "Closed $OPENFILE"
 
 
